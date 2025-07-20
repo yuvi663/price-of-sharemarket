@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crypto Price Tracker</title>
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-YOUR_ADSENSE_ID" crossorigin="anonymous"></script>
+    <style>
+        :root {
+            --primary-color: #3498db;
+            --secondary-color: #2c3e50;
+            --accent-color: #e74c3c;
+            --light-color: #ecf0f1;
+            --dark-color: #2c3e50;
+            --success-color: #2ecc71;
+            --warning-color: #f39c12;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f5f5;
+            color: var(--dark-color);
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            background-color: var(--secondary-color);
+            color: white;
+            padding: 20px 0;
+            text-align: center;
+            margin-bottom: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        
+        .ad-container {
+            background-color: white;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            border: 1px dashed #ccc;
+        }
+        
+        .ad-container p {
+            margin-bottom: 10px;
+            color: #777;
+        }
+        
+        .control-panel {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+        }
+        
+        .search-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .search-box {
+            flex: 1;
+            min-width: 200px;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        
+        .currency-select {
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+            background-color: white;
+        }
+        
+        .refresh-btn {
+            padding: 12px 20px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+        
+        .refresh-btn:hover {
+            background-color: #2980b9;
+        }
+        
+        .price-display {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+        }
+        
+        .coin-info {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .coin-icon {
+            width: 50px;
+            height: 50px;
+            margin-right: 15px;
+        }
+        
+        .coin-name {
+            font-size: 1.8rem;
+            font-weight: bold;
+        }
+        
+        .coin-symbol {
+            color: #777;
+            font-size: 1.2rem;
+            margin-left: 10px;
+        }
+        
+        .price-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 30px;
+        }
+        
+        .price-box {
+            flex: 1;
+            min-width: 200px;
+            padding: 15px;
+            border-radius: 8px;
+            background-color: #f9f9f9;
+        }
+        
+        .price-label {
+            font-size: 0.9rem;
+            color: #777;
+            margin-bottom: 5px;
+        }
+        
+        .price-value {
+            font-size: 1.8rem;
+            font-weight: bold;
+        }
+        
+        .price-change {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            margin-left: 10px;
+        }
+        
+        .positive {
+            background-color: rgba(46, 204, 113, 0.2);
+            color: var(--success-color);
+        }
+        
+        .negative {
+            background-color: rgba(231, 76, 60, 0.2);
+            color: var(--accent-color);
+        }
+        
+        .chart-container {
+            height: 300px;
+            margin-top: 20px;
+            background-color: #f9f9f9;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #777;
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 40px;
+            padding: 20px;
+            color: #777;
+            font-size: 0.9rem;
+        }
+        
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .coin-name {
+                font-size: 1.5rem;
+            }
+            
+            .price-value {
+                font-size: 1.5rem;
+            }
+            
+            .search-container {
+                flex-direction: column;
+            }
+            
+            .search-box, .currency-select, .refresh-btn {
+                width: 100%;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .container {
+                padding: 10px;
+            }
+            
+            header {
+                padding: 15px 0;
+            }
+            
+            h1 {
+                font-size: 1.8rem;
+            }
+            
+            .price-container {
+                flex-direction: column;
+                gap: 15px;
+            }
+        }
+        
+        /* Loading animation */
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+            margin-left: 10px;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Cryptocurrency Price Tracker</h1>
+            <p>Get real-time prices for your favorite cryptocurrencies</p>
+        </header>
+        
+        <!-- Top Ad Banner -->
+        <div class="ad-container">
+            <p>Advertisement</p>
+            <!-- Replace with your AdSense code -->
+            <ins class="adsbygoogle"
+                 style="display:block"
+                 data-ad-client="ca-pub-YOUR_ADSENSE_ID"
+                 data-ad-slot="YOUR_AD_SLOT_ID"
+                 data-ad-format="auto"
+                 data-full-width-responsive="true"></ins>
+            <script>
+                 (adsbygoogle = window.adsbygoogle || []).push({});
+            </script>
+        </div>
+        
+        <div class="control-panel">
+            <div class="search-container">
+                <input type="text" class="search-box" id="searchInput" placeholder="Search cryptocurrency (e.g. Bitcoin, Ethereum)">
+                <select class="currency-select" id="currencySelect">
+                    <option value="usd">USD</option>
+                    <option value="eur">EUR</option>
+                    <option value="gbp">GBP</option>
+                    <option value="jpy">JPY</option>
+                    <option value="inr">INR</option>
+                </select>
+                <button class="refresh-btn" id="refreshBtn">Refresh Data <span id="refreshSpinner" class="loading" style="display: none;"></span></button>
+            </div>
+        </div>
+        
+        <div class="price-display" id="priceDisplay">
+            <div class="coin-info">
+                <img src="https://cryptologos.cc/logos/bitcoin-btc-logo.png" alt="Bitcoin" class="coin-icon" id="coinIcon">
+                <div>
+                    <span class="coin-name" id="coinName">Bitcoin</span>
+                    <span class="coin-symbol" id="coinSymbol">BTC</span>
+                </div>
+            </div>
+            
+            <div class="price-container">
+                <div class="price-box">
+                    <div class="price-label">Current Price</div>
+                    <div class="price-value" id="currentPrice">$00,000.00</div>
+                </div>
+                <div class="price-box">
+                    <div class="price-label">24h Change</div>
+                    <div class="price-value" id="priceChange24h">0.00%</div>
+                </div>
+                <div class="price-box">
+                    <div class="price-label">Market Cap</div>
+                    <div class="price-value" id="marketCap">$000.00B</div>
+                </div>
+                <div class="price-box">
+                    <div class="price-label">24h Volume</div>
+                    <div class="price-value" id="volume24h">$00.00B</div>
+                </div>
+            </div>
+            
+            <div class="chart-container">
+                Price chart will be displayed here (integration with TradingView or Chart.js would go here)
+            </div>
+        </div>
+        
+        <!-- Middle Ad Banner -->
+        <div class="ad-container">
+            <p>Advertisement</p>
+            <!-- Replace with your AdSense code -->
+            <ins class="adsbygoogle"
+                 style="display:block"
+                 data-ad-client="ca-pub-YOUR_ADSENSE_ID"
+                 data-ad-slot="YOUR_AD_SLOT_ID"
+                 data-ad-format="auto"
+                 data-full-width-responsive="true"></ins>
+            <script>
+                 (adsbygoogle = window.adsbygoogle || []).push({});
+            </script>
+        </div>
+        
+        <footer>
+            <p>&copy; 2023 Crypto Price Tracker. Data provided by CoinGecko API.</p>
+            <p>Prices update every 60 seconds. Last updated: <span id="lastUpdated">Never</span></p>
+        </footer>
+    </div>
+
+    <script>
+        // Replace with your actual API key if needed
+        const API_URL = 'https://api.coingecko.com/api/v3';
+        
+        // Default coin to display
+        let currentCoinId = 'bitcoin';
+        let currentCurrency = 'usd';
+        let coinData = {};
+        
+        // DOM elements
+        const searchInput = document.getElementById('searchInput');
+        const currencySelect = document.getElementById('currencySelect');
+        const refreshBtn = document.getElementById('refreshBtn');
+        const refreshSpinner = document.getElementById('refreshSpinner');
+        const priceDisplay = document.getElementById('priceDisplay');
+        const coinIcon = document.getElementById('coinIcon');
+        const coinName = document.getElementById('coinName');
+        const coinSymbol = document.getElementById('coinSymbol');
+        const currentPrice = document.getElementById('currentPrice');
+        const priceChange24h = document.getElementById('priceChange24h');
+        const marketCap = document.getElementById('marketCap');
+        const volume24h = document.getElementById('volume24h');
+        const lastUpdated = document.getElementById('lastUpdated');
+        
+        // Initialize the app
+        document.addEventListener('DOMContentLoaded', () => {
+            fetchCoinData(currentCoinId);
+            
+            // Set up event listeners
+            refreshBtn.addEventListener('click', () => {
+                refreshSpinner.style.display = 'inline-block';
+                fetchCoinData(currentCoinId);
+            });
+            
+            currencySelect.addEventListener('change', () => {
+                currentCurrency = currencySelect.value;
+                updatePriceDisplay();
+            });
+            
+            // Search functionality with debounce
+            let searchTimeout;
+            searchInput.addEventListener('input', () => {
+                clearTimeout(searchTimeout);
+                searchTimeout = setTimeout(() => {
+                    if (searchInput.value.trim().length > 2) {
+                        searchCoins(searchInput.value.trim());
+                    }
+                }, 500);
+            });
+            
+            // Auto-refresh every 60 seconds
+            setInterval(() => {
+                fetchCoinData(currentCoinId);
+            }, 60000);
+        });
+        
+        // Fetch coin data from API
+        async function fetchCoinData(coinId) {
+            try {
+                const response = await fetch(`${API_URL}/coins/${coinId}?localization=false&tickers=false&market_data=true&community_data=false&developer_data=false&sparkline=false`);
+                
+                if (!response.ok) {
+                    throw new Error('Failed to fetch coin data');
+                }
+                
+                coinData = await response.json();
+                updatePriceDisplay();
+                
+                // Update last updated time
+                const now = new Date();
+                lastUpdated.textContent = now.toLocaleString();
+                
+            } catch (error) {
+                console.error('Error fetching coin data:', error);
+                priceDisplay.innerHTML = `<p style="color: var(--accent-color); text-align: center;">Error loading data. Please try again later.</p>`;
+            } finally {
+                refreshSpinner.style.display = 'none';
+            }
+        }
+        
+        // Update the UI with current coin data
+        function updatePriceDisplay() {
+            if (!coinData.market_data) return;
+            
+            const marketData = coinData.market_data;
+            const currency = currentCurrency;
+            
+            // Update coin info
+            coinName.textContent = coinData.name;
+            coinSymbol.textContent = coinData.symbol.toUpperCase();
+            coinIcon.src = coinData.image?.small || 'https://via.placeholder.com/50';
+            
+            // Update prices
+            const price = marketData.current_price[currency];
+            const priceChange = marketData.price_change_percentage_24h;
+            const cap = marketData.market_cap[currency];
+            const volume = marketData.total_volume[currency];
+            
+            currentPrice.textContent = formatCurrency(price, currency);
+            marketCap.textContent = formatCurrency(cap, currency, true);
+            volume24h.textContent = formatCurrency(volume, currency, true);
+            
+            // Format price change
+            priceChange24h.textContent = `${priceChange >= 0 ? '+' : ''}${priceChange.toFixed(2)}%`;
+            priceChange24h.className = 'price-value';
+            priceChange24h.classList.add(priceChange >= 0 ? 'positive' : 'negative');
+        }
+        
+        // Format currency based on locale
+        function formatCurrency(value, currency, compact = false) {
+            const formatter = new Intl.NumberFormat(getLocale(currency), {
+                style: 'currency',
+                currency: currency.toUpperCase(),
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
+                notation: compact ? 'compact' : 'standard'
+            });
+            
+            return formatter.format(value);
+        }
+        
+        // Get locale based on currency
+        function getLocale(currency) {
+            const locales = {
+                usd: 'en-US',
+                eur: 'de-DE',
+                gbp: 'en-GB',
+                jpy: 'ja-JP',
+                inr: 'en-IN'
+            };
+            
+            return locales[currency] || 'en-US';
+        }
+        
+        // Search for coins
+        async function searchCoins(query) {
+            try {
+                const response = await fetch(`${API_URL}/search?query=${encodeURIComponent(query)}`);
+                
+                if (!response.ok) {
+                    throw new Error('Failed to search coins');
+                }
+                
+                const data = await response.json();
+                
+                if (data.coins && data.coins.length > 0) {
+                    // For simplicity, we'll just take the first result
+                    currentCoinId = data.coins[0].id;
+                    fetchCoinData(currentCoinId);
+                    
+                    // Update search input with the full name
+                    searchInput.value = data.coins[0].name;
+                }
+            } catch (error) {
+                console.error('Error searching coins:', error);
+            }
+        }
+    </script>
+</body>
+</html>
